@@ -114,3 +114,23 @@ window.onload = function () {
     }
     updateProgressCircle();
 };
+
+
+const { Telegraf } = require('telegraf');
+
+const bot = new Telegraf(BOT_TOKEN);
+
+bot.command('reset', (ctx) => {
+    ctx.reply("আপনার প্রগ্রেস রিসেট হচ্ছে... ✅");
+    ctx.reply("আপনি আবার নতুন করে অ্যাড দেখতে পারবেন!");
+
+    ctx.telegram.sendMessage(ctx.chat.id, "🚀 রিসেট করতে নিচের লিংকে ক্লিক করুন:", {
+        reply_markup: {
+            inline_keyboard: [[
+                { text: "🔄 Reset Progress", web_app: { url: "https://YOUR_SITE/reset.html" } }
+            ]]
+        }
+    });
+});
+
+bot.launch();
