@@ -50,7 +50,7 @@ function updateProgressCircle() {
 function disableAdsForTwentyMinutes() {
   document.getElementById("watch-ad-btn").disabled = true;
   const messageElement = document.getElementById("progress-message");
-  let endTime = Date.now() + 5 * 60 * 1000; // ২০ মিনিটের টাইমার (পরীক্ষার জন্য ৩০ সেক করতে পারো)
+  let endTime = Date.now() +  30 * 1000; // ২০ মিনিটের টাইমার (পরীক্ষার জন্য ৩০ সেক করতে পারো)
   localStorage.setItem("adsDisabledUntil", endTime);
 
   function updateCountdown() {
