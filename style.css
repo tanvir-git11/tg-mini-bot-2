@@ -20,9 +20,9 @@ body {
     max-width: 400px;
     transition: transform 0.3s ease-in-out;
 }
-.container:hover {
+/* .container:hover {
     transform: scale(1.05);
-}
+} */
 h1 {
     font-size: 18px;
     color: #ffd900;
