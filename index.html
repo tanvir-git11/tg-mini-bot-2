@@ -24,9 +24,10 @@
             <div class="progress-circle">
                 <span id="ads-progress">0%</span>
             </div>
-            <div class="welcome-message" id="welcome-msg">🎉 Daily Task complete 🎉</div>
-            <p id="progress-message" style="text-align: center; font-weight: bold; margin-top: 10px;"></p>
+            <!-- <div class="welcome-message" id="welcome-msg">🎉 Daily Task complete 🎉</div> -->
+           
         </div>
+        <p id="progress-message" style="text-align: center; font-weight: bold; margin-top: 10px;"></p>
         
             <div class="buttons">
                 <button id="watch-ad-btn" onclick="watchAd()">Watch Ad</button>
@@ -45,17 +46,18 @@
 
 <div class="withdraw-section" id="withdraw-section">
     <h3 style="color: orange; margin-bottom: 15px;">Withdrawal Request</h3>
-    <input type="number" id="withdraw-amount" placeholder="Enter Points to Withdraw" />
+    <input type="number" id="withdraw-amount" placeholder="Enter to Withdraw Balance" />
     <select id="payment-method">
+        <option value="manual">Manual</option>
         <option value="bkash">Bkash</option>
         <option value="nagad">Nagad</option>
-        <option value="manual">Manual</option>
+        
     </select>
     <input type="text" id="your-name" placeholder="Enter your telegram User Name" />
     <input type="text" id="withdraw-phone" placeholder="Enter Phone Number" />
     <button onclick="withdrawPoints()">Withdraw</button>
     <p id="withdraw-status"></p>
-</div
+</div>
     </div>
     <script src='//jagnaimsee.net/vignette.min.js' data-zone='8887062' data-sdk='show_8887062'></script> 
      
