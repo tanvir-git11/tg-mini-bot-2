@@ -9,6 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    
 }
 .container {
     text-align: center;
@@ -23,11 +24,15 @@ body {
 /* .container:hover {
     transform: scale(1.05);
 } */
-h1 {
+h2 {
     font-size: 18px;
     color: #ffd900;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
+h4{
+    color: #00a4aa;
+}
+
 .developer{
    background-color: #563800;
    padding: 10px;

@@ -8,8 +8,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Dear User Welcome To  Free Income 2025 </h1>
-        <h2 id="username">Loading...</h2>
+        <h2> Dear User Welcome To  Free Income 2025 </h2>
+        <h4 id="username">Loading...</h4>
         <div class="developer" onclick="window.location.href='https://t.me/thegreekytanvir'">Developer by Tanvir Islam Tamim</div>
         
         <!-- Display User Info -->
@@ -81,13 +81,13 @@
 
                 let username = tg.initDataUnsafe?.user?.username;
                 document.getElementById("username").innerText = 
-                    username ? `Welcome, @${username}` : "No username found!";
+                    username ? `@${username}` : "No username found!"; 
             } else {
                 document.getElementById("username").innerText = "Telegram Web App not detected!";
                 console.error("Telegram WebApp API লোড হয়নি!");
             }
         });
-        
+
       </script>
    
     <script src="/app.js"></script>
