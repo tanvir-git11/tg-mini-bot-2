@@ -9,6 +9,7 @@
 <body>
     <div class="container">
         <h1>Dear User Welcome To  Free Income 2025 </h1>
+        <h2 id="username">Loading...</h2>
         <div class="developer" onclick="window.location.href='https://t.me/thegreekytanvir'">Developer by Tanvir Islam Tamim</div>
         
         <!-- Display User Info -->
@@ -71,8 +72,19 @@
             withdrawSection.scrollIntoView({ behavior: "smooth" });
           }
         });
-      </script>
 
+         // Telegram Web Apps API দিয়ে ইউজার ইনফো বের করা
+         let tg = window.Telegram.WebApp;
+        tg.expand(); // ফুল স্ক্রিন মোড
+
+        // ইউজার ইনফো বের করে দেখানো
+        document.getElementById("username").innerText = 
+            tg.initDataUnsafe?.user?.username 
+            ? `Welcome, @${tg.initDataUnsafe.user.username}` 
+            : "User not found";
+
+      </script>
+    <script async src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="/app.js"></script>
 </body>
 </html>
