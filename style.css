@@ -24,12 +24,12 @@ body {
 /* .container:hover {
     transform: scale(1.05);
 } */
-h2 {
+h1 {
     font-size: 18px;
     color: #ffd900;
     /* margin-bottom: 10px; */
 }
-h4{
+h3{
     color: #00a4aa;
 }
 
