@@ -33,6 +33,14 @@ h3{
     color: #00a4aa;
 }
 
+#username {
+    font-size: 24px;
+}
+.blue-text {
+    color: #1E90FF; /* Dodger Blue */
+    font-weight: bold;
+}
+
 .developer{
    background-color: #563800;
    padding: 10px;
