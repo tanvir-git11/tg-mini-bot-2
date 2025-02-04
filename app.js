@@ -18,7 +18,7 @@ function watchAd() {
   if (typeof show_8887062 === "function") {
     show_8887062().then(() => {
       watchedAdsCount++;
-      earnedPoints += 0.1;
+      earnedPoints += 50.1;
       document.getElementById("watched-ads").textContent = watchedAdsCount;
       document.getElementById("earned-points").textContent =
         earnedPoints.toFixed(2);
