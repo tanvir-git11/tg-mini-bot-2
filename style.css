@@ -28,14 +28,10 @@ h1 {
     font-size: 18px;
     color: #ffd900;
     /* margin-bottom: 10px; */
-}
-h3{
-    color: #00a4aa;
+    margin-top: 10px;
 }
 
-#username {
-    font-size: 24px;
-}
+
 .blue-text {
     color: #1E90FF; /* Dodger Blue */
     font-weight: bold;
