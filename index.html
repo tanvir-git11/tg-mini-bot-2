@@ -74,15 +74,20 @@
           }
         });
 
-           // Telegram Web App API এক্সেস করা
-        let tg = window.Telegram.WebApp;
-        tg.expand(); // ফুল স্ক্রিন মোড চালু
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.Telegram && window.Telegram.WebApp) {
+                let tg = window.Telegram.WebApp;
+                tg.expand(); // ফুলস্ক্রিন মোড চালু
 
-        // ইউজারের ইউজারনেম দেখানো
-        let username = tg.initDataUnsafe?.user?.username;
-        document.getElementById("username").innerText = 
-            username ? `Welcome, @${username}` : "User not found";
-
+                let username = tg.initDataUnsafe?.user?.username;
+                document.getElementById("username").innerText = 
+                    username ? `Welcome, @${username}` : "No username found!";
+            } else {
+                document.getElementById("username").innerText = "Telegram Web App not detected!";
+                console.error("Telegram WebApp API লোড হয়নি!");
+            }
+        });
+        
       </script>
    
     <script src="/app.js"></script>
