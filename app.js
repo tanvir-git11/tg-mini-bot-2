@@ -1,32 +1,51 @@
 const MIN_WITHDRAW_POINTS = 20;
 const ADMIN_USER_ID = 5919121831;
 const BOT_TOKEN = "7486908395:AAE394yKNBNxemB3JpnIScly2VE8jsdTVYs";
-let watchedAdsCount = localStorage.getItem("watchedAdsCount")
-  ? parseInt(localStorage.getItem("watchedAdsCount"))
-  : 0;
-let earnedPoints = localStorage.getItem("earnedPoints")
-  ? parseFloat(localStorage.getItem("earnedPoints"))
-  : 0.0;
+
+// লোকাল স্টোরেজ থেকে সঠিক সংখ্যা রিসেট করা
+let watchedAdsCount = parseInt(localStorage.getItem("watchedAdsCount")) || 0;
+let earnedPoints = parseFloat(localStorage.getItem("earnedPoints")) || 0.0;
+let pendingReferralBonus = parseFloat(localStorage.getItem("pendingBonus")) || 0.0;
+
+// NaN হলে ব্যাকআপ ভ্যালু সেট করা
+if (isNaN(earnedPoints)) {
+  earnedPoints = 0.0;
+  localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
+}
+if (isNaN(watchedAdsCount)) {
+  watchedAdsCount = 0;
+  localStorage.setItem("watchedAdsCount", watchedAdsCount);
+}
+
 let progressResetTimeout;
 
-// Display user data on page load
+// পেজ লোড হলে ব্যালেন্স আপডেট করা
 document.getElementById("watched-ads").textContent = watchedAdsCount;
 document.getElementById("earned-points").textContent = earnedPoints.toFixed(2);
 updateProgressCircle();
+
 
 function watchAd() {
   if (typeof show_8887062 === "function") {
     show_8887062().then(() => {
       watchedAdsCount++;
-      earnedPoints += 0.01;
-      document.getElementById("watched-ads").textContent = watchedAdsCount;
-      document.getElementById("earned-points").textContent =
-        earnedPoints.toFixed(2);
-      localStorage.setItem("watchedAdsCount", watchedAdsCount);
-      localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
-      updateProgressCircle();
+      earnedPoints += 0.05;
+      updateUserData();
+    }).catch(err => {
+      console.error("Ad loading failed:", err);
+      alert("Ad loading failed. Please try again.");
     });
+  } else {
+    alert("Ad script not loaded. Try reloading the page.");
   }
+}
+
+function updateUserData() {
+  document.getElementById("watched-ads").textContent = watchedAdsCount;
+  document.getElementById("earned-points").textContent = earnedPoints.toFixed(2);
+  localStorage.setItem("watchedAdsCount", watchedAdsCount);
+  localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
+  updateProgressCircle();
 }
 
 function updateProgressCircle() {
@@ -50,7 +69,7 @@ function updateProgressCircle() {
 function disableAdsForTwentyMinutes() {
   document.getElementById("watch-ad-btn").disabled = true;
   const messageElement = document.getElementById("progress-message");
-  let endTime = Date.now() +  30 * 1000; // ২০ মিনিটের টাইমার (পরীক্ষার জন্য ৩০ সেক করতে পারো)
+  let endTime = Date.now() + 30 * 1000; // ২০ মিনিটের টাইমার (পরীক্ষার জন্য ৩০ সেক)
   localStorage.setItem("adsDisabledUntil", endTime);
 
   function updateCountdown() {
@@ -58,10 +77,7 @@ function disableAdsForTwentyMinutes() {
     if (remainingTime > 0) {
       let minutes = Math.floor(remainingTime / (1000 * 60));
       let seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-      messageElement.textContent = `⏳ ${minutes}:${
-        seconds < 10 ? "0" : ""
-      }${seconds} পর আবার কাজ করতে পারবেন`;
-      messageElement.style.textAlign = "center";
+      messageElement.textContent = `⏳ ${minutes}:${seconds < 10 ? "0" : ""}${seconds} পর আবার কাজ করতে পারবেন`;
       setTimeout(updateCountdown, 1000);
     } else {
       messageElement.textContent = "✅ আপনি এখন আবার কাজ করতে পারবেন!";
@@ -88,32 +104,25 @@ function withdrawPoints() {
     return;
   }
   if (amount > earnedPoints) {
-    alert(
-      `আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই। You have ${earnedPoints.toFixed(
-        2
-      )} Taka.`
-    );
+    alert(`আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই। You have ${earnedPoints.toFixed(2)} Taka.`);
     return;
   }
 
   earnedPoints -= amount;
-  document.getElementById("earned-points").textContent =
-    earnedPoints.toFixed(2);
-  localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
+  updateUserData();
 
-  const message = `New Withdrawal Request from @${name}\n\nAmount: ${amount} points\nPayment Method: ${paymentMethod}\nPhone Number: ${phoneNumber}`;
+  const message = `New Withdrawal Request from @${name}
+
+Amount: ${amount} points
+Payment Method: ${paymentMethod}
+Phone Number: ${phoneNumber}`;
   sendWithdrawRequestToAdmin(message);
 
-  document.getElementById("withdraw-status").textContent =
-    "Withdrawal request sent successfully!";
+  document.getElementById("withdraw-status").textContent = "Withdrawal request sent successfully!";
 }
 
 function sendWithdrawRequestToAdmin(message) {
-  fetch(
-    `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_USER_ID}&text=${encodeURIComponent(
-      message
-    )}`
-  )
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_USER_ID}&text=${encodeURIComponent(message)}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.ok) {
@@ -129,29 +138,97 @@ window.onload = function () {
     disableAdsForTwentyMinutes();
   }
   updateProgressCircle();
+
+  // AdBlock Checker
+  setTimeout(() => {
+    if (typeof show_8887062 !== "function") {
+      alert("Please disable AdBlock to watch ads and earn points.");
+    }
+  }, 3000);
 };
 
-const { Telegraf } = require("telegraf");
 
-const bot = new Telegraf(BOT_TOKEN);
 
-bot.command("reset", (ctx) => {
-  ctx.reply("আপনার প্রগ্রেস রিসেট হচ্ছে... ✅");
-  ctx.reply("আপনি আবার নতুন করে অ্যাড দেখতে পারবেন!");
+// রেফারেল লিংক তৈরি করা
+function generateReferralLink(userId) {
+  const botUsername = "@free_income_botbot";
+  return `https://t.me/${botUsername}?start=${userId}`;
+}
 
-  watchedAdsCount = 0;
-  earnedPoints = 0;
-  localStorage.setItem("watchedAdsCount", watchedAdsCount);
-  localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
-  localStorage.removeItem("adsDisabledUntil");
-
-  updateProgressCircle();
-
-  ctx.telegram.sendMessage(ctx.chat.id, "🚀 রিসেট সফলভাবে সম্পন্ন হয়েছে!", {
-    reply_markup: {
-      inline_keyboard: [[{ text: "🔄 Reset Again", callback_data: "reset" }]],
-    },
-  });
+document.getElementById("referral-btn").addEventListener("click", function() {
+  const userId = localStorage.getItem("telegramUserId");
+  if (userId) {
+    const referralLink = generateReferralLink(userId);
+    document.getElementById("referral-link").textContent = referralLink;
+  } else {
+    alert("User ID not found!");
+  }
 });
 
-bot.launch();
+// রেফারেল থেকে জয়েন করলে রেফারারের তথ্য সংরক্ষণ
+window.onload = function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const referrerId = urlParams.get("start");
+  
+  if (referrerId) {
+    localStorage.setItem("referrerId", referrerId);
+    alert("✅ আপনি একটি রেফারেল লিংক থেকে জয়েন করেছেন!");
+    saveReferralData(referrerId);
+    notifyReferrer(referrerId);
+  }
+};
+
+// রেফার করা ইউজার সংরক্ষণ করা
+function saveReferralData(referrerId) {
+  let referrals = JSON.parse(localStorage.getItem(`referrals_${referrerId}`)) || [];
+  let username = "User_" + Math.floor(Math.random() * 10000);
+  referrals.push(username);
+  localStorage.setItem(`referrals_${referrerId}`, JSON.stringify(referrals));
+}
+
+// রেফারারকে নোটিফাই করা
+function notifyReferrer(referrerId) {
+  const message = `🎉 একজন নতুন ইউজার আপনার রেফারেল লিংক ব্যবহার করে জয়েন করেছে!`;
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${referrerId}&text=${encodeURIComponent(message)}`);
+}
+
+// রেফার করা ইউজারদের তালিকা দেখানো
+function showReferralList() {
+  let userId = localStorage.getItem("telegramUserId");
+  let referrals = JSON.parse(localStorage.getItem(`referrals_${userId}`)) || [];
+  if (referrals.length > 0) {
+    alert(`👥 আপনার রেফার করা ইউজারদের তালিকা:\n\n${referrals.join("\n")}`);
+  } else {
+    alert("😢 আপনার রেফারেল লিংক থেকে এখনো কেউ জয়েন করেনি!");
+  }
+}
+
+document.getElementById("show-referrals-btn").addEventListener("click", showReferralList);
+
+// উইথড্র করার সময় রেফারারকে টাকা যোগ করা
+function withdrawPoints() {
+  let amount = parseFloat(document.getElementById("withdraw-amount").value);
+  if (amount < MIN_WITHDRAW_POINTS) {
+    alert(`তোমার ব্যালেন্সে সর্বনিম্ন ${MIN_WITHDRAW_POINTS} টাকা থাকা লাগবে`);
+    return;
+  }
+  if (amount > earnedPoints) {
+    alert(`আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই। You have ${earnedPoints.toFixed(2)} Taka.`);
+    return;
+  }
+
+  let referrerId = localStorage.getItem("referrerId");
+  if (referrerId) {
+    sendReferralBonus(referrerId);
+    localStorage.removeItem("referrerId");
+  }
+
+  earnedPoints -= amount;
+  localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
+  alert("✅ উইথড্রাল রিকোয়েস্ট পাঠানো হয়েছে!");
+}
+
+function sendReferralBonus(referrerId) {
+  const message = `🎉 আপনার রেফার করা একজন ইউজার উইথড্র দিয়েছে! আপনার ব্যালেন্সে ৳2 যোগ হয়েছে।`;
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${referrerId}&text=${encodeURIComponent(message)}`);
+}
