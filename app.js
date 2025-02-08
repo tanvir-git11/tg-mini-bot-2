@@ -159,13 +159,34 @@ document.getElementById("referral-btn").addEventListener("click", function() {
   let userId = localStorage.getItem("telegramUserId");
 
   if (!userId) {
-    alert("User ID not found! Please restart the bot."); // ✅ এখন সতর্কবার্তা দেখাবে
-    return;
+    userId = prompt("আপনার Telegram User ID দিন:");
+    if (userId) {
+      localStorage.setItem("telegramUserId", userId);
+    } else {
+      alert("User ID not found! Please restart the bot.");
+      return;
+    }
   }
 
   const referralLink = generateReferralLink(userId);
-  document.getElementById("referral-link").textContent = referralLink;
+  const referralText = document.getElementById("referral-link");
+
+  referralText.textContent = referralLink;
+  referralText.style.display = "block"; // লিংক দেখাবে
+
+  // ক্লিক করলে লিংক কপি হবে
+  referralText.addEventListener("click", function() {
+    navigator.clipboard.writeText(referralLink).then(() => {
+      referralText.classList.add("copied"); // কপি অ্যানিমেশন দেখাবে
+      referralText.textContent = "✅ কপি করা হয়েছে!";
+      setTimeout(() => {
+        referralText.textContent = referralLink; // ২ সেকেন্ড পর লিংক দেখাবে
+        referralText.classList.remove("copied");
+      }, 2000);
+    });
+  });
 });
+
 
 
 // রেফারেল থেকে জয়েন করলে রেফারারের তথ্য সংরক্ষণ
