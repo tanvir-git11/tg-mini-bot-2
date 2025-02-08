@@ -156,14 +156,17 @@ function generateReferralLink(userId) {
 }
 
 document.getElementById("referral-btn").addEventListener("click", function() {
-  const userId = localStorage.getItem("telegramUserId");
-  if (userId) {
-    const referralLink = generateReferralLink(userId);
-    document.getElementById("referral-link").textContent = referralLink;
-  } else {
-    alert("User ID not found!");
+  let userId = localStorage.getItem("telegramUserId");
+
+  if (!userId) {
+    alert("User ID not found! Please restart the bot."); // ✅ এখন সতর্কবার্তা দেখাবে
+    return;
   }
+
+  const referralLink = generateReferralLink(userId);
+  document.getElementById("referral-link").textContent = referralLink;
 });
+
 
 // রেফারেল থেকে জয়েন করলে রেফারারের তথ্য সংরক্ষণ
 window.onload = function() {
@@ -172,10 +175,12 @@ window.onload = function() {
   
   if (referrerId) {
     localStorage.setItem("referrerId", referrerId);
+    localStorage.setItem("telegramUserId", referrerId); // ✅ ইউজার আইডি সেট করা হলো
     alert("✅ আপনি একটি রেফারেল লিংক থেকে জয়েন করেছেন!");
     saveReferralData(referrerId);
     notifyReferrer(referrerId);
   }
+  
 };
 
 // রেফার করা ইউজার সংরক্ষণ করা
@@ -197,7 +202,8 @@ function showReferralList() {
   let userId = localStorage.getItem("telegramUserId");
   let referrals = JSON.parse(localStorage.getItem(`referrals_${userId}`)) || [];
   if (referrals.length > 0) {
-    alert(`👥 আপনার রেফার করা ইউজারদের তালিকা:\n\n${referrals.join("\n")}`);
+    alert(`👥 আপনার রেফার করা ইউজারদের তালিকা:\n\n${referrals.join("\\n")}`);
+
   } else {
     alert("😢 আপনার রেফারেল লিংক থেকে এখনো কেউ জয়েন করেনি!");
   }
