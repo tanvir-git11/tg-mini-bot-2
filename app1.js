@@ -80,21 +80,7 @@ function resetProgress() {
   updateProgressCircle()
 }
 
-// Assuming show_8887062 is a function provided externally, like from an ad network SDK.
-//  This needs to be included in your HTML file before this script is loaded.
-//  For example: <script src="path/to/ad-sdk.js"></script>
 
-// Declare show_8887062 as a function if it's not already defined.  This is a placeholder.
-// You'll need to replace this with the actual implementation from your ad network SDK.
-const show_8887062 = () => {
-  return new Promise((resolve, reject) => {
-    // Replace this with your actual ad showing logic.
-    // This example simulates a successful ad showing after a 2-second delay.
-    setTimeout(() => {
-      resolve()
-    }, 2000)
-  })
-}
 
 function watchAd() {
   if (typeof show_8887062 === "function") {
@@ -116,16 +102,17 @@ function watchAd() {
 const pendingWithdrawals = []; // Declare pendingWithdrawals array
 
 function showWithdrawHistory() {
-  // Implementation for showWithdrawHistory
-  console.log("Withdrawal history shown");
+  //Implementation for showWithdrawHistory
+  console.log("Withdrawal history shown")
 }
 
 function updateWithdrawalHistory() {
-  const historyContent = document.getElementById("history-content");
+  const historyContent = document.getElementById("history-content")
   if (historyContent) {
-    showWithdrawHistory();
+    showWithdrawHistory()
   }
 }
+
 
 
 function withdrawPoints() {

@@ -282,12 +282,12 @@ max-height: 500px; /* Adjust as needed */
   }
   
   th {
-    background-color: #f2f2f2;
+    background-color: #1a1919;
     font-weight: bold;
   }
   
   tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #000333;
   }
   
   #show-history-btn {
@@ -306,6 +306,38 @@ max-height: 500px; /* Adjust as needed */
   
   #show-history-btn:hover {
     background-color: #45a049;
+  }
+  
+  .status-pending {
+    color: #f39c12;
+    font-weight: bold;
+  }
+  
+  .status-completed {
+    color: #2ecc71;
+    font-weight: bold;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
   }
   
   
