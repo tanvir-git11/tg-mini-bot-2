@@ -192,4 +192,41 @@ max-height: 500px; /* Adjust as needed */
     background-color: #4caf50;
     color: white;
   }
+  .custom-alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+  }
   
+  .custom-alert {
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    opacity: 0.9;
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  .custom-alert.info {
+    background-color: #3498db;
+  }
+  
+  .custom-alert.success {
+    background-color: #2ecc71;
+  }
+  
+  .custom-alert.warning {
+    background-color: #f39c12;
+  }
+  
+  .custom-alert.error {
+    background-color: #e74c3c;
+  }
+  
+  .custom-alert.fade-out {
+    opacity: 0;
+  }
+  
+    

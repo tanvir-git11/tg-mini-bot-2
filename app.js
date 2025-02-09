@@ -60,38 +60,41 @@ function updateProgressCircle() {
   progressCircle.style.boxShadow = `0 0 15px ${color}`;
 
   if (percentage >= 100) {
-    disableAdsForTwentyMinutes();
+    disableAdsForThirtyMinutes();
   } else {
     progressMessage.textContent = "";
   }
 }
-
 function disableAdsForThirtyMinutes() {
   document.getElementById("watch-ad-btn").disabled = true;
   const messageElement = document.getElementById("progress-message");
-  let endTime = Date.now() + 30 * 60 * 1000; // আধা ঘন্টার টাইমার
+  let endTime = Date.now() + 15* 1000; // ৩০ মিনিটের টাইমার
   localStorage.setItem("adsDisabledUntil", endTime);
+  updateCountdown();
+}
 
-  function updateCountdown() {
+
+function updateCountdown() {
+  const messageElement = document.getElementById("progress-message");
+  let endTime = parseInt(localStorage.getItem("adsDisabledUntil"));
+
+  function countdown() {
     let remainingTime = endTime - Date.now();
     if (remainingTime > 0) {
       let minutes = Math.floor(remainingTime / (1000 * 60));
       let seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
       messageElement.textContent = `⏳ ${minutes}:${seconds < 10 ? "0" : ""}${seconds} পর আবার কাজ করতে পারবেন`;
-      setTimeout(updateCountdown, 1000);
+      setTimeout(countdown, 1000);
     } else {
       messageElement.textContent = "✅ আপনি এখন আবার কাজ করতে পারবেন!";
-      watchedAdsCount = 0;
-      localStorage.setItem("watchedAdsCount", watchedAdsCount);
-      updateProgressCircle();
       document.getElementById("watch-ad-btn").disabled = false;
       localStorage.removeItem("adsDisabledUntil");
     }
   }
-
-  messageElement.textContent = "🚀 ৩০ মিনিটের জন্য এড দেখা বন্ধ করা হয়েছে!";
-  updateCountdown();
+  countdown();
 }
+
+
 
 function withdrawPoints() {
   const amount = parseFloat(document.getElementById("withdraw-amount").value);
@@ -134,6 +137,24 @@ function withdrawPoints() {
   alert("✅ উইথড্রাল রিকোয়েস্ট পাঠানো হয়েছে!");
 
 }
+
+function refundPendingWithdrawals() {
+  let pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
+  let newWithdrawals = [];
+
+  pendingWithdrawals.forEach(withdrawal => {
+    if (withdrawal.status === "pending") {
+      earnedPoints += withdrawal.amount; // ব্যালেন্স ফেরত দেওয়া
+      localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
+    } else {
+      newWithdrawals.push(withdrawal);
+    }
+  });
+
+  localStorage.setItem("pendingWithdrawals", JSON.stringify(newWithdrawals));
+  alert("✅ যাদের পেমেন্ট করা হয়নি, তাদের ব্যালেন্স ফেরত দেওয়া হয়েছে!");
+}
+
 
 
 
@@ -329,3 +350,26 @@ function completeWithdrawal(requestId) {
 
   alert("✅ পেমেন্ট কমপ্লিট করা হয়েছে!");
 }
+
+
+function checkAdsCooldown() {
+  let savedEndTime = localStorage.getItem("adsDisabledUntil");
+  if (savedEndTime) {
+    savedEndTime = parseInt(savedEndTime);
+    if (Date.now() < savedEndTime) {
+      document.getElementById("watch-ad-btn").disabled = true;
+      updateCountdown();
+    } else {
+      localStorage.removeItem("adsDisabledUntil");
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("watched-ads").textContent = watchedAdsCount;
+  document.getElementById("earned-points").textContent = earnedPoints.toFixed(2);
+  updateProgressCircle();
+  checkAdsCooldown();  // ✅ নতুন ফাংশন কল করা
+});
+
+document.getElementById("refund-btn").addEventListener("click", refundPendingWithdrawals);
