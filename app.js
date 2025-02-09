@@ -66,10 +66,10 @@ function updateProgressCircle() {
   }
 }
 
-function disableAdsForTwentyMinutes() {
+function disableAdsForThirtyMinutes() {
   document.getElementById("watch-ad-btn").disabled = true;
   const messageElement = document.getElementById("progress-message");
-  let endTime = Date.now() + 30 * 1000; // ২০ মিনিটের টাইমার (পরীক্ষার জন্য ৩০ সেক)
+  let endTime = Date.now() + 30 * 60 * 1000; // আধা ঘন্টার টাইমার
   localStorage.setItem("adsDisabledUntil", endTime);
 
   function updateCountdown() {
@@ -89,7 +89,7 @@ function disableAdsForTwentyMinutes() {
     }
   }
 
-  messageElement.textContent = "২০ মিনিট পর আবার কাজ করতে পারবেন ⏳";
+  messageElement.textContent = "🚀 ৩০ মিনিটের জন্য এড দেখা বন্ধ করা হয়েছে!";
   updateCountdown();
 }
 
@@ -109,43 +109,64 @@ function withdrawPoints() {
   }
 
   earnedPoints -= amount;
-  updateUserData();
+  localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
 
-  const message = `New Withdrawal Request from @${name}
+  let pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
+  let requestId = Date.now(); // প্রত্যেক রিকোয়েস্টের জন্য ইউনিক আইডি
+  
+  pendingWithdrawals.push({ id: requestId, name, amount, paymentMethod, phoneNumber, status: "pending" });
+  localStorage.setItem("pendingWithdrawals", JSON.stringify(pendingWithdrawals));
 
-Amount: ${amount} points
-Payment Method: ${paymentMethod}
-Phone Number: ${phoneNumber}`;
+  // ✅ এডমিনকে টেলিগ্রামে রিকোয়েস্ট পাঠানো হবে
+  const message = `📢 নতুন উইথড্রাল রিকোয়েস্ট!
+
+👤 ইউজার: ${name}
+💰 পরিমাণ: ${amount} Taka
+📞 ফোন: ${phoneNumber}
+🏦 পেমেন্ট মেথড: ${paymentMethod}
+🆔 রিকোয়েস্ট আইডি: ${requestId}
+
+✅ কমপ্লিট করতে নিচের কমান্ডটি ব্যবহার করুন:
+/complete_${requestId}
+`;
+
   sendWithdrawRequestToAdmin(message);
+  alert("✅ উইথড্রাল রিকোয়েস্ট পাঠানো হয়েছে!");
 
-  document.getElementById("withdraw-status").textContent = "Withdrawal request sent successfully!";
 }
+
+
 
 function sendWithdrawRequestToAdmin(message) {
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_USER_ID}&text=${encodeURIComponent(message)}`)
     .then((response) => response.json())
     .then((data) => {
+      console.log("Admin Response:", data); // ✅ লগ চেক করতে পারবে
       if (data.ok) {
         console.log("Message sent to admin");
+      } else {
+        alert("❌ অ্যাডমিনের কাছে মেসেজ পাঠানো যায়নি!");
       }
     })
-    .catch((error) => console.error("Error sending message:", error));
+    .catch((error) => {
+      console.error("Error sending message:", error);
+      alert("❌ কিছু সমস্যা হয়েছে, পরে চেষ্টা করুন!");
+    });
 }
 
 window.onload = function () {
   let savedEndTime = localStorage.getItem("adsDisabledUntil");
   if (savedEndTime && Date.now() < savedEndTime) {
-    disableAdsForTwentyMinutes();
+    disableAdsForThirtyMinutes();
   }
   updateProgressCircle();
-
-  // AdBlock Checker
   setTimeout(() => {
     if (typeof show_8887062 !== "function") {
-      alert("Please disable AdBlock to watch ads and earn points.");
+      alert("🚫 দয়া করে AdBlock বন্ধ করুন, নাহলে এড দেখা যাবে না!");
     }
   }, 3000);
 };
+
 
 
 
@@ -189,25 +210,27 @@ document.getElementById("referral-btn").addEventListener("click", function() {
 
 
 
-// রেফারেল থেকে জয়েন করলে রেফারারের তথ্য সংরক্ষণ
 window.onload = function() {
   const urlParams = new URLSearchParams(window.location.search);
   const referrerId = urlParams.get("start");
-  
+
   if (referrerId) {
     localStorage.setItem("referrerId", referrerId);
-    localStorage.setItem("telegramUserId", referrerId); // ✅ ইউজার আইডি সেট করা হলো
     alert("✅ আপনি একটি রেফারেল লিংক থেকে জয়েন করেছেন!");
+
     saveReferralData(referrerId);
     notifyReferrer(referrerId);
   }
-  
 };
 
-// রেফার করা ইউজার সংরক্ষণ করা
 function saveReferralData(referrerId) {
   let referrals = JSON.parse(localStorage.getItem(`referrals_${referrerId}`)) || [];
-  let username = "User_" + Math.floor(Math.random() * 10000);
+  let username = prompt("আপনার Telegram Username দিন:");
+  
+  if (!username) {
+    username = "Unknown_User";
+  }
+
   referrals.push(username);
   localStorage.setItem(`referrals_${referrerId}`, JSON.stringify(referrals));
 }
@@ -258,4 +281,51 @@ function withdrawPoints() {
 function sendReferralBonus(referrerId) {
   const message = `🎉 আপনার রেফার করা একজন ইউজার উইথড্র দিয়েছে! আপনার ব্যালেন্সে ৳2 যোগ হয়েছে।`;
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${referrerId}&text=${encodeURIComponent(message)}`);
+}
+
+function showWithdrawHistory() {
+  let pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
+  if (pendingWithdrawals.length === 0) {
+    alert("🔍 কোনো পেন্ডিং উইথড্রাল রিকোয়েস্ট নেই!");
+    return;
+  }
+
+  let historyText = "📜 উইথড্রাল হিস্টোরি:\n";
+  pendingWithdrawals.forEach((w, index) => {
+    historyText += `${index + 1}. ${w.name} - ${w.amount} Taka - ${w.paymentMethod} - ${w.phoneNumber} - ${w.status === "pending" ? "⏳ Pending" : "✅ Completed"}\n`;
+  });
+
+  alert(historyText);
+}
+
+document.getElementById("show-history-btn").addEventListener("click", showWithdrawHistory);
+
+
+
+function completeWithdrawal(requestId) {
+  let pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
+
+  let withdrawal = pendingWithdrawals.find(w => w.id == requestId);
+  if (!withdrawal) {
+    alert("❌ রিকোয়েস্ট পাওয়া যায়নি!");
+    return;
+  }
+
+  withdrawal.status = "completed";
+  localStorage.setItem("pendingWithdrawals", JSON.stringify(pendingWithdrawals));
+
+  // ✅ ইউজারকে জানানো হবে
+  const message = `🎉 আপনার উইথড্রাল সফল হয়েছে!
+  
+💰 পরিমাণ: ${withdrawal.amount} Taka
+📞 ফোন: ${withdrawal.phoneNumber}
+🏦 পেমেন্ট মেথড: ${withdrawal.paymentMethod}
+✅ স্ট্যাটাস: Completed`;
+
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${withdrawal.phoneNumber}&text=${encodeURIComponent(message)}`)
+    .then(response => response.json())
+    .then(data => console.log("Withdrawal completed message sent:", data))
+    .catch(error => console.error("Error sending completion message:", error));
+
+  alert("✅ পেমেন্ট কমপ্লিট করা হয়েছে!");
 }
