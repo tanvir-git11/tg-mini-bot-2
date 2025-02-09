@@ -151,7 +151,7 @@ window.onload = function () {
 
 // রেফারেল লিংক তৈরি করা
 function generateReferralLink(userId) {
-  const botUsername = "@free_income_botbot";
+  const botUsername = "free_income_botbot";
   return `https://t.me/${botUsername}?start=${userId}`;
 }
 
