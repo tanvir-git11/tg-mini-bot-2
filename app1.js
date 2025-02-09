@@ -48,7 +48,7 @@ function updateProgressCircle() {
 function disableAdsForThirtyMinutes() {
   document.getElementById("watch-ad-btn").disabled = true
   const messageElement = document.getElementById("progress-message")
-  const endTime = Date.now() + 10 * 1000 // 30 minutes timer
+  const endTime = Date.now() + 30 * 60 * 1000 // 30 minutes timer
   localStorage.setItem("adsDisabledUntil", endTime)
   updateCountdown()
 }
@@ -63,7 +63,7 @@ function updateCountdown() {
     if (remainingTime > 0) {
       const minutes = Math.floor(remainingTime / (1000 * 60))
       const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000)
-      messageElement.textContent = `⏳ ${minutes}:${seconds < 10 ? "0" : ""}${seconds} পর আবার কাজ করতে পারবেন, অবশ্যই 1 ঘন্টা পরে আবার কাজ শুরু করেন , তা না হলে একাউন্টের ব্যালেন্স 00 হয়ে যাবে 😊😊`
+      messageElement.textContent = `⏳ ${minutes}:${seconds < 10 ? "0" : ""}${seconds} পর আবার কাজ করতে পারবেন`
     } else {
       messageElement.textContent = "✅ আপনি এখন আবার কাজ করতে পারবেন!"
       document.getElementById("watch-ad-btn").disabled = false
@@ -78,6 +78,22 @@ function resetProgress() {
   watchedAdsCount = 0
   localStorage.setItem("watchedAdsCount", watchedAdsCount)
   updateProgressCircle()
+}
+
+// Assuming show_8887062 is a function provided externally, like from an ad network SDK.
+//  This needs to be included in your HTML file before this script is loaded.
+//  For example: <script src="path/to/ad-sdk.js"></script>
+
+// Declare show_8887062 as a function if it's not already defined.  This is a placeholder.
+// You'll need to replace this with the actual implementation from your ad network SDK.
+const show_8887062 = () => {
+  return new Promise((resolve, reject) => {
+    // Replace this with your actual ad showing logic.
+    // This example simulates a successful ad showing after a 2-second delay.
+    setTimeout(() => {
+      resolve()
+    }, 2000)
+  })
 }
 
 function watchAd() {
@@ -97,6 +113,21 @@ function watchAd() {
   }
 }
 
+const pendingWithdrawals = []; // Declare pendingWithdrawals array
+
+function showWithdrawHistory() {
+  // Implementation for showWithdrawHistory
+  console.log("Withdrawal history shown");
+}
+
+function updateWithdrawalHistory() {
+  const historyContent = document.getElementById("history-content");
+  if (historyContent) {
+    showWithdrawHistory();
+  }
+}
+
+
 function withdrawPoints() {
   const amount = Number.parseFloat(document.getElementById("withdraw-amount").value)
   const paymentMethod = document.getElementById("payment-method").value
@@ -104,11 +135,11 @@ function withdrawPoints() {
   const name = document.getElementById("your-name").value
 
   if (amount < MIN_WITHDRAW_POINTS) {
-    alert(`তোমার ব্যালেন্সে সর্বনিম্ন ${MIN_WITHDRAW_POINTS} টাকা থাকা লাগবে`)
+    showCustomAlert(`তোমার ব্যালেন্সে সর্বনিম্ন ${MIN_WITHDRAW_POINTS} টাকা থাকা লাগবে`, "warning")
     return
   }
   if (amount > earnedPoints) {
-    alert(`আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই। You have ${earnedPoints.toFixed(2)} Taka.`)
+    showCustomAlert(`আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই। You have ${earnedPoints.toFixed(2)} Taka.`, "error")
     return
   }
 
@@ -116,26 +147,38 @@ function withdrawPoints() {
   localStorage.setItem("earnedPoints", earnedPoints.toFixed(2))
 
   const pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || []
-  const requestId = Date.now() // প্রত্যেক রিকোয়েস্টের জন্য ইউনিক আইডি
+  const requestId = Date.now()
 
-  pendingWithdrawals.push({ id: requestId, name, amount, paymentMethod, phoneNumber, status: "pending" })
+  const newWithdrawal = {
+    id: requestId,
+    name,
+    amount,
+    paymentMethod,
+    phoneNumber,
+    status: "pending",
+    date: new Date().toISOString(),
+  }
+
+  pendingWithdrawals.push(newWithdrawal)
   localStorage.setItem("pendingWithdrawals", JSON.stringify(pendingWithdrawals))
 
-  // ✅ এডমিনকে টেলিগ্রামে রিকোয়েস্ট পাঠানো হবে
-  const message = `📢 নতুন উইথড্রাল রিকোয়েস্ট!
+  // এডমিনকে টেলিগ্রামে রিকোয়েস্ট পাঠানো
+  const message = `📢 নতুন উইথড্রাল রিকোয়েস্ট!
 
 👤 ইউজার: ${name}
 💰 পরিমাণ: ${amount} Taka
 📞 ফোন: ${phoneNumber}
 🏦 পেমেন্ট মেথড: ${paymentMethod}
-🆔 রিকোয়েস্ট আইডি: ${requestId}
+🆔 রিকোয়েস্ট আইডি: ${requestId}
 
 ✅ কমপ্লিট করতে নিচের কমান্ডটি ব্যবহার করুন:
 /complete_${requestId}
 `
 
   sendWithdrawRequestToAdmin(message)
-  alert("✅ উইথড্রাল রিকোয়েস্ট পাঠানো হয়েছে!")
+  showCustomAlert("✅ উইথড্রাল রিকোয়েস্ট পাঠানো হয়েছে!", "success")
+  updateUserData()
+  updateWithdrawalHistory() // নতুন লাইন যোগ করা হয়েছে
 }
 
 function refundPendingWithdrawals() {
@@ -267,29 +310,6 @@ function showReferralList() {
 
 document.getElementById("show-referrals-btn").addEventListener("click", showReferralList)
 
-// উইথড্র করার সময় রেফারারকে টাকা যোগ করা
-function withdrawPoints() {
-  const amount = Number.parseFloat(document.getElementById("withdraw-amount").value)
-  if (amount < MIN_WITHDRAW_POINTS) {
-    alert(`তোমার ব্যালেন্সে সর্বনিম্ন ${MIN_WITHDRAW_POINTS} টাকা থাকা লাগবে`)
-    return
-  }
-  if (amount > earnedPoints) {
-    alert(`আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই। You have ${earnedPoints.toFixed(2)} Taka.`)
-    return
-  }
-
-  const referrerId = localStorage.getItem("referrerId")
-  if (referrerId) {
-    sendReferralBonus(referrerId)
-    localStorage.removeItem("referrerId")
-  }
-
-  earnedPoints -= amount
-  localStorage.setItem("earnedPoints", earnedPoints.toFixed(2))
-  alert("✅ উইথড্রাল রিকোয়েস্ট পাঠানো হয়েছে!")
-}
-
 function sendReferralBonus(referrerId) {
   const message = `🎉 আপনার রেফার করা একজন ইউজার উইথড্র দিয়েছে! আপনার ব্যালেন্সে ৳2 যোগ হয়েছে।`
   fetch(
@@ -299,17 +319,39 @@ function sendReferralBonus(referrerId) {
 
 function showWithdrawHistory() {
   const pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || []
+  const historyContent = document.getElementById("history-content")
+  const modal = document.getElementById("history-modal")
+
   if (pendingWithdrawals.length === 0) {
-    alert("🔍 কোনো পেন্ডিং উইথড্রাল রিকোয়েস্ট নেই!")
-    return
+    historyContent.innerHTML = "<p>🔍 কোনো উইথড্রাল হিস্টরি নেই!</p>"
+  } else {
+    let historyHTML = "<table><tr><th>তারিখ</th><th>পরিমাণ</th><th>পেমেন্ট মেথড</th><th>স্ট্যাটাস</th></tr>"
+    pendingWithdrawals.forEach((w) => {
+      const date = new Date(w.date).toLocaleString("bn-BD")
+      historyHTML += `<tr>
+                <td>${date}</td>
+                <td>${w.amount} Taka</td>
+                <td>${w.paymentMethod}</td>
+                <td>${w.status === "pending" ? "⏳ Pending" : "✅ Completed"}</td>
+            </tr>`
+    })
+    historyHTML += "</table>"
+    historyContent.innerHTML = historyHTML
   }
 
-  let historyText = "📜 উইথড্রাল হিস্টোরি:\n"
-  pendingWithdrawals.forEach((w, index) => {
-    historyText += `${index + 1}. ${w.name} - ${w.amount} Taka - ${w.paymentMethod} - ${w.phoneNumber} - ${w.status === "pending" ? "⏳ Pending" : "✅ Completed"}\n`
-  })
+  modal.style.display = "block"
 
-  alert(historyText)
+  // Close the modal when clicking on <span> (x)
+  modal.querySelector(".close").onclick = () => {
+    modal.style.display = "none"
+  }
+
+  // Close the modal when clicking outside of it
+  window.onclick = (event) => {
+    if (event.target == modal) {
+      modal.style.display = "none"
+    }
+  }
 }
 
 document.getElementById("show-history-btn").addEventListener("click", showWithdrawHistory)
