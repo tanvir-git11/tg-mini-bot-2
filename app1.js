@@ -48,7 +48,7 @@ function updateProgressCircle() {
 function disableAdsForThirtyMinutes() {
   document.getElementById("watch-ad-btn").disabled = true
   const messageElement = document.getElementById("progress-message")
-  const endTime = Date.now() + 30 * 60 * 1000 // 30 minutes timer
+  const endTime = Date.now() + 10 * 1000 // 30 minutes timer
   localStorage.setItem("adsDisabledUntil", endTime)
   updateCountdown()
 }
@@ -63,7 +63,7 @@ function updateCountdown() {
     if (remainingTime > 0) {
       const minutes = Math.floor(remainingTime / (1000 * 60))
       const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000)
-      messageElement.textContent = `⏳ ${minutes}:${seconds < 10 ? "0" : ""}${seconds} পর আবার কাজ করতে পারবেন`
+      messageElement.textContent = `⏳ ${minutes}:${seconds < 10 ? "0" : ""}${seconds} পর আবার কাজ করতে পারবেন, অবশ্যই 1 ঘন্টা পরে আবার কাজ শুরু করেন , তা না হলে একাউন্টের ব্যালেন্স 00 হয়ে যাবে 😊😊`
     } else {
       messageElement.textContent = "✅ আপনি এখন আবার কাজ করতে পারবেন!"
       document.getElementById("watch-ad-btn").disabled = false
