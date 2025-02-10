@@ -344,34 +344,42 @@ function showWithdrawHistory() {
 document.getElementById("show-history-btn").addEventListener("click", showWithdrawHistory)
 
 function completeWithdrawal(requestId) {
-  const pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || []
+  let pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
 
-  const withdrawal = pendingWithdrawals.find((w) => w.id == requestId)
-  if (!withdrawal) {
-    alert("❌ রিকোয়েস্ট পাওয়া যায়নি!")
-    return
+  let withdrawalIndex = pendingWithdrawals.findIndex(w => w.id == requestId);
+  if (withdrawalIndex === -1) {
+    alert("❌ রিকোয়েস্ট পাওয়া যায়নি!");
+    return;
   }
 
-  withdrawal.status = "completed"
-  localStorage.setItem("pendingWithdrawals", JSON.stringify(pendingWithdrawals))
+  // স্ট্যাটাস আপডেট করা
+  pendingWithdrawals[withdrawalIndex].status = "completed";
+
+  // আপডেটেড লিস্ট আবার localStorage-এ সংরক্ষণ করা
+  localStorage.setItem("pendingWithdrawals", JSON.stringify(pendingWithdrawals));
 
   // ✅ ইউজারকে জানানো হবে
   const message = `🎉 আপনার উইথড্রাল সফল হয়েছে!
+  
+💰 পরিমাণ: ${pendingWithdrawals[withdrawalIndex].amount} Taka
+📞 ফোন: ${pendingWithdrawals[withdrawalIndex].phoneNumber}
+🏦 পেমেন্ট মেথড: ${pendingWithdrawals[withdrawalIndex].paymentMethod}
+✅ স্ট্যাটাস: Completed`;
 
-💰 পরিমাণ: ${withdrawal.amount} Taka
-📞 ফোন: ${withdrawal.phoneNumber}
-🏦 পেমেন্ট মেথড: ${withdrawal.paymentMethod}
-✅ স্ট্যাটাস: Completed`
+  const userChatId = localStorage.getItem("telegramUserId"); // ইউজারের টেলিগ্রাম আইডি নিয়ে আসা
 
-  fetch(
-    `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${withdrawal.phoneNumber}&text=${encodeURIComponent(message)}`,
-  )
-    .then((response) => response.json())
-    .then((data) => console.log("Withdrawal completed message sent:", data))
-    .catch((error) => console.error("Error sending completion message:", error))
+  if (userChatId) {
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${userChatId}&text=${encodeURIComponent(message)}`)
+      .then(response => response.json())
+      .then(data => console.log("Withdrawal completed message sent:", data))
+      .catch(error => console.error("Error sending completion message:", error));
+  } else {
+    console.warn("User Telegram ID not found, cannot send message.");
+  }
 
-  alert("✅ পেমেন্ট কমপ্লিট করা হয়েছে!")
+  alert("✅ পেমেন্ট কমপ্লিট করা হয়েছে!");
 }
+
 
 function checkAdsCooldown() {
   let savedEndTime = localStorage.getItem("adsDisabledUntil")
