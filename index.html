@@ -9,11 +9,6 @@
 <body>
     <div class="container">
         <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
         <h1> Dear User Welcome To  Free Income 2025 </h1>
         <h3 id="username">Loading...</h3>
         <div id="custom-alert-container"></div>
@@ -37,30 +32,28 @@
         </div>
         <p id="progress-message" style="text-align: center; font-weight: bold; margin-top: 10px;"></p>
         
-            <div class="buttons">
-                <button id="watch-ad-btn" onclick="watchAd()">Watch Ad</button>
-                <a href="https://poawooptugroo.com/4/8887764">
-                    <button>Diract Ads link </button>
-                </a>
-                <a href="https://t.me/freeincomeee2025">
-                    <button>Payment Prove</button>
-                </a>
-                <a href="https://t.me/freeiincome2025">
-                    <button>Join Community</button>
-                </a>
-                <button id="withdraw-btn" ">Withdraw</button>
-                <button id="refund-btn">❌ ব্যালেন্স ফেরত দিন</button>
-                <button id="referral-btn">📎 রেফারেল লিংক দেখুন</button>
-                <button id="show-referrals-btn">📋 রেফার করা ইউজারদের তালিকা</button>
-              
+          
+                  <!-- Main Buttons -->
+        <div class="buttons">
+            <button id="watch-ad-btn" onclick="watchAd()">Watch Ad</button>
+            <a href="https://poawooptugroo.com/4/8887764">
+                <button>Direct Link</button>
+            </a>
+            <button id="toggle-btn" onclick="toggleButtons()">Show More</button>
+        </div>
+               <!-- Hidden Buttons -->
+        <div class="extra-buttons" id="extra-buttons" style="display: none;">
+            <a href="https://t.me/freeincomeee2025"><button>Payment Proof</button></a>
+            <a href="https://t.me/freeiincome2025"><button>Join Community</button></a>
+            <button id="withdraw-btn">Withdraw</button>
+            <button id="refund-btn">❌ ব্যালেন্স ফেরত দিন</button>
+            <button id="referral-btn">📎 রেফারেল লিংক দেখুন</button>
+            <button id="show-referrals-btn">📋 রেফার করা ইউজারদের তালিকা</button>
+            <button id="show-history-btn">📋উইথড্রাল হিস্টরি দেখুন</button>
 
-                <p id="referral-link"></p>
-              
-
-            </div>
+            <p id="referral-link"></p>
+        </div>
        
-
-
        <!-- Withdraw Section -->
 
 <div class="withdraw-section" id="withdraw-section">
@@ -78,7 +71,7 @@
     <p id="withdraw-status"></p>
 </div>
 
-<button id="show-history-btn">উইথড্রাল হিস্টরি দেখুন</button>
+
     
 <div id="custom-alert-container"></div>
 
@@ -122,6 +115,19 @@
                 console.error("Telegram WebApp API লোড হয়নি!");
             }
         });
+
+        function toggleButtons() {
+                var extraButtons = document.getElementById("extra-buttons");
+                var toggleBtn = document.getElementById("toggle-btn");
+
+                if (extraButtons.style.display === "none") {
+                    extraButtons.style.display = "block";
+                    toggleBtn.innerText = "Show Less";
+                } else {
+                    extraButtons.style.display = "none";
+                    toggleBtn.innerText = "Show More";
+                }
+            }
 
       </script>
    
