@@ -396,7 +396,7 @@ function checkAdsCooldown() {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("watched-ads").textContent = watchedAdsCount
-  document.getElementById("earned-points").textContent = earnedPoints.toFixed(2)
+  document.getElementById("earned-points").textContent = earnedPoints.toFixed(5)
   updateProgressCircle()
   checkAdsCooldown() // ✅ নতুন ফাংশন কল করা
 })
