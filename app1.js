@@ -439,20 +439,66 @@ updateProgressCircle()
 
 //////////////////////////////
 
+// 🔹 লোকাল স্টোরেজ থেকে ইউজারদের ব্যালেন্স পাওয়া ও শীর্ষ ৫ জন নির্বাচন করা
+function getTopUsers() {
+  let users = JSON.parse(localStorage.getItem("usersData")) || [];
+
+  // ব্যালেন্স অনুযায়ী সাজানো (Descending Order)
+  users.sort((a, b) => b.balance - a.balance);
+
+  // শুধুমাত্র শীর্ষ ৫ জন ইউজার দেখানো
+  return users.slice(0, 5);
+}
+
+// 🔹 লিডারবোর্ড আপডেট করা
+function showLeaderboard() {
+  const leaderboardList = document.getElementById("leaderboard-list");
+  leaderboardList.innerHTML = "";
+
+  const topUsers = getTopUsers();
+
+  if (topUsers.length === 0) {
+      leaderboardList.innerHTML = "<tr><td colspan='3'>😢 এখনো কোনো ইউজার নেই!</td></tr>";
+      return;
+  }
+
+  topUsers.forEach((user, index) => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${user.name}</td>
+          <td>৳ ${user.balance.toFixed(2)}</td>
+      `;
+
+      leaderboardList.appendChild(row);
+  });
+}
+
+// 🔹 নতুন ইউজার যোগ করা
+function addNewUser(username, balance) {
+  let users = JSON.parse(localStorage.getItem("usersData")) || [];
+  users.push({ name: username, balance: balance });
+
+  localStorage.setItem("usersData", JSON.stringify(users));
+  console.log(`✅ নতুন ইউজার যোগ হয়েছে: ${username}, ব্যালেন্স: ৳${balance}`);
+}
+
+// 🔹 ইউজারের ব্যালেন্স আপডেট করা
 function updateUserBalance(username, points) {
   let users = JSON.parse(localStorage.getItem("usersData")) || [];
-  
   let user = users.find(u => u.name === username);
-  
+
   if (user) {
-      user.balance += points; // পুরাতন ইউজারের ব্যালেন্স আপডেট
+      user.balance += points; // ব্যালেন্স আপডেট
   } else {
-      users.push({ name: username, balance: points }); // নতুন ইউজার যোগ করা
+      users.push({ name: username, balance: points }); // নতুন ইউজার যোগ
   }
 
   localStorage.setItem("usersData", JSON.stringify(users));
 }
 
+// 🔹 ইউজার যখন উইথড্র করবে তখন ব্যালেন্স কমানো
 function withdrawPoints(username, amount) {
   let users = JSON.parse(localStorage.getItem("usersData")) || [];
   let user = users.find(u => u.name === username);
@@ -469,4 +515,11 @@ function withdrawPoints(username, amount) {
       console.log("❌ ইউজার পাওয়া যায়নি!");
   }
 }
+
+// 🔹 উইন্ডো লোড হলে লিডারবোর্ড আপডেট হবে
+window.onload = () => {
+  if (document.getElementById("leaderboard-list")) {
+      showLeaderboard();
+  }
+};
 
