@@ -117,10 +117,11 @@ tr:nth-child(3) td {
         function getTopUsers() {
             let users = JSON.parse(localStorage.getItem("usersData")) || [];
 
-            // ব্যালেন্স অনুযায়ী সাজানো (Descending Order)
-            users.sort((a, b) => b.balance - a.balance);
+            if (users.length === 0) {
+                return [];
+            }
 
-            // শুধুমাত্র শীর্ষ ৫ জন ইউজার দেখানো
+            users.sort((a, b) => b.balance - a.balance);
             return users.slice(0, 5);
         }
 

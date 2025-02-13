@@ -437,3 +437,31 @@ document.getElementById("watched-ads").textContent = watchedAdsCount
 document.getElementById("earned-points").textContent = earnedPoints.toFixed(2)
 updateProgressCircle()
 
+//////////////////////////////
+
+function updateUserBalance(username, points) {
+  let users = JSON.parse(localStorage.getItem("usersData")) || [];
+  
+  let user = users.find(u => u.name === username);
+  
+  if (user) {
+      user.balance += points; // পুরাতন ইউজারের ব্যালেন্স আপডেট
+  } else {
+      users.push({ name: username, balance: points }); // নতুন ইউজার যোগ করা
+  }
+
+  localStorage.setItem("usersData", JSON.stringify(users));
+}
+
+// টেস্ট ডাটা লোকাল স্টোরেজে সেট করা
+if (!localStorage.getItem("usersData")) {
+  let testUsers = [
+      { name: "Tanvir", balance: 500 },
+      { name: "Rakib", balance: 700 },
+      { name: "Hasan", balance: 300 },
+      { name: "Nayeem", balance: 900 },
+      { name: "Shihab", balance: 1200 },
+      { name: "Arafat", balance: 1100 }
+  ];
+  localStorage.setItem("usersData", JSON.stringify(testUsers));
+}
