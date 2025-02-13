@@ -453,15 +453,20 @@ function updateUserBalance(username, points) {
   localStorage.setItem("usersData", JSON.stringify(users));
 }
 
-// টেস্ট ডাটা লোকাল স্টোরেজে সেট করা
-if (!localStorage.getItem("usersData")) {
-  let testUsers = [
-      { name: "Tanvir", balance: 500 },
-      { name: "Rakib", balance: 700 },
-      { name: "Hasan", balance: 300 },
-      { name: "Nayeem", balance: 900 },
-      { name: "Shihab", balance: 1200 },
-      { name: "Arafat", balance: 1100 }
-  ];
-  localStorage.setItem("usersData", JSON.stringify(testUsers));
+function withdrawPoints(username, amount) {
+  let users = JSON.parse(localStorage.getItem("usersData")) || [];
+  let user = users.find(u => u.name === username);
+
+  if (user) {
+      if (user.balance >= amount) {
+          user.balance -= amount; // ব্যালেন্স কমানো
+          localStorage.setItem("usersData", JSON.stringify(users));
+          console.log(`✅ ${username} উইথড্র করেছে: ৳${amount}, নতুন ব্যালেন্স: ৳${user.balance}`);
+      } else {
+          console.log("❌ পর্যাপ্ত ব্যালেন্স নেই!");
+      }
+  } else {
+      console.log("❌ ইউজার পাওয়া যায়নি!");
+  }
 }
+
