@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 লিডারবোর্ড</title>
+   <style>
+    /* 🌑 ডার্ক মোডের জন্য বেসিক সেটআপ */
+body {
+    font-family: Arial, sans-serif;
+    background: #010024; /* পুরো ব্যাকগ্রাউন্ড কালো */
+    color: #ffffff; /* লেখা সাদা */
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* 🟦 কন্টেইনার ডিজাইন */
+.container {
+    width: 90%;
+    max-width: 500px;
+    margin: 50px auto;
+    background: rgba(255, 255, 255, 0.1); /* হালকা গ্রে ব্যাকগ্রাউন্ড */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.1);
+}
+
+/* 🔘 বোতামের ডিজাইন */
+.btn {
+    background: #1f1f1f; /* ডার্ক গ্রে */
+    color: #00072e; /* টেক্সট সাদা */
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #333333; /* আরো ডার্ক কালার */
+}
+
+/* 🔙 ব্যাক বাটন */
+.back-btn {
+    margin-top: 15px;
+    background: #f7b500;
+}
+
+.back-btn:hover {
+    background: #ffe600;
+}
+
+/* 🏆 লিডারবোর্ড টেবিল */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1f1f1f; /* ডার্ক ব্যাকগ্রাউন্ড */
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+th {
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 18px;
+}
+
+td {
+    font-size: 16px;
+}
+
+/* 🏅 প্রথম, দ্বিতীয় ও তৃতীয় স্থান আলাদা রঙ */
+tr:nth-child(1) td {
+    color: gold;
+    font-weight: bold;
+}
+
+tr:nth-child(2) td {
+    color: silver;
+    font-weight: bold;
+}
+
+tr:nth-child(3) td {
+    color: #cd7f32;
+    font-weight: bold;
+}
+
+   </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🏆 শীর্ষ ৫ ইউজার</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>🏅 র‌্যাংক</th>
+                    <th>👤 ইউজারনেম</th>
+                    <th>💰 ব্যালেন্স (৳)</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-list"></tbody>
+        </table>
+
+        <button class="btn back-btn" onclick="window.history.back()">🔙 ফেরত যান</button>
+    </div>
+
+    <script>
+        function getTopUsers() {
+            let users = JSON.parse(localStorage.getItem("usersData")) || [];
+
+            // ব্যালেন্স অনুযায়ী ইউজারদের সাজানো (Descending Order)
+            users.sort((a, b) => b.balance - a.balance);
+
+            // শুধুমাত্র শীর্ষ ৫ জন ইউজার দেখানো
+            return users.slice(0, 5);
+        }
+
+        function showLeaderboard() {
+            const leaderboardList = document.getElementById("leaderboard-list");
+            leaderboardList.innerHTML = "";
+
+            const topUsers = getTopUsers();
+
+            if (topUsers.length === 0) {
+                leaderboardList.innerHTML = "<tr><td colspan='3'>😢 এখনো কোনো ইউজার নেই!</td></tr>";
+                return;
+            }
+
+            topUsers.forEach((user, index) => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${user.name}</td>
+                    <td>৳ ${user.balance.toFixed(2)}</td>
+                `;
+
+                leaderboardList.appendChild(row);
+            });
+        }
+
+        window.onload = showLeaderboard;
+    </script>
+
+</body>
+</html>
+
