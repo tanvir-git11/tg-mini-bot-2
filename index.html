@@ -138,53 +138,7 @@
       </script>
    
     <script src="/app1.js"></script>
-    <script>
-        function completeAllPendingWithdrawals() {
-          let pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
-          
-          pendingWithdrawals.forEach(withdrawal => {
-            if (withdrawal.status === "pending") {
-              withdrawal.status = "completed";
-            }
-          });
-      
-          localStorage.setItem("pendingWithdrawals", JSON.stringify(pendingWithdrawals));
-      
-          alert("✅ সব পেন্ডিং উইথড্রাল কমপ্লিট করা হয়েছে!");
-        }
-      
-        function notifyAllUsers() {
-          let pendingWithdrawals = JSON.parse(localStorage.getItem("pendingWithdrawals")) || [];
-      
-          pendingWithdrawals.forEach(withdrawal => {
-            if (withdrawal.status === "completed") {
-              const message = `🎉 আপনার উইথড্রাল সফল হয়েছে!
-              
-      💰 পরিমাণ: ${withdrawal.amount} Taka
-      📞 ফোন: ${withdrawal.phoneNumber}
-      🏦 পেমেন্ট মেথড: ${withdrawal.paymentMethod}
-      ✅ স্ট্যাটাস: Completed`;
-      
-              const userChatId = localStorage.getItem("telegramUserId");
-      
-              if (userChatId) {
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${userChatId}&text=${encodeURIComponent(message)}`)
-                  .then(response => response.json())
-                  .then(data => console.log("Withdrawal completed message sent:", data))
-                  .catch(error => console.error("Error sending completion message:", error));
-              } else {
-                console.warn("User Telegram ID not found, cannot send message.");
-              }
-            }
-          });
-      
-          alert("✅ সব ইউজারকে নোটিফাই করা হয়েছে!");
-        }
-      
-        // একবার রান করার জন্য কল করো
-        completeAllPendingWithdrawals();
-        notifyAllUsers();
-      </script>
+
       
 </body>
 </html>
