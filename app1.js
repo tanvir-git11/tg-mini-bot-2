@@ -116,7 +116,7 @@ function updateWithdrawalHistory() {
 
 
 function withdrawPoints() {
-  const amount = Number.parseFloat(document.getElementById("withdraw-amount").value)
+  const amount = document.parseFloat(document.getElementById("withdraw-amount").value)
   const paymentMethod = document.getElementById("payment-method").value
   const phoneNumber = document.getElementById("withdraw-phone").value
   const name = document.getElementById("your-name").value
@@ -258,7 +258,7 @@ window.onload = () => {
 
   // Check for AdBlock
   setTimeout(() => {
-    if (typeof show_8887062 !== "function") {
+    if (typeof show_8887062e !== "function") {
       showCustomAlert("🚫 দয়া করে AdBlock বন্ধ করুন, নাহলে এড দেখা যাবে না!", "warning")
     }
   }, 3000)
