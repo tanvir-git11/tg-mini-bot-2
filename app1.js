@@ -83,8 +83,8 @@ function resetProgress() {
 
 
 function watchAd() {
-  if (typeof show_8887062 === "function") {
-    show_8887062()
+  if (typeof show_"8887062"  === "function") {
+    show_"8887062" ()
       .then(() => {
         watchedAdsCount++
         earnedPoints += 0.05
@@ -258,7 +258,7 @@ window.onload = () => {
 
   // Check for AdBlock
   setTimeout(() => {
-    if (typeof show_8887062e !== "function") {
+    if (typeof show_8887062  !== "function") {
       showCustomAlert("🚫 দয়া করে AdBlock বন্ধ করুন, নাহলে এড দেখা যাবে না!", "warning")
     }
   }, 3000)
